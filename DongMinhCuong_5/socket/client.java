@@ -36,15 +36,31 @@ public class client {
         try {
             // Read data from keyboard
             Scanner scanner = new Scanner(System.in);
+            String inputGuide = "(Available commands: ['HELLO Server', 'USER INFO', 'QUIT'])\n";
+            String message = "Enter something:";
 
             while (true) {
-                System.out.println("Enter something:");
+                System.out.println(inputGuide + message);
                 String input = scanner.nextLine();
 
                 outStream.write(input);
                 outStream.newLine();
                 outStream.flush();
-                System.out.println("Server: " + inStream.readLine());
+
+                String response = inStream.readLine();
+                System.out.println("Server: " + response);
+
+                if (response.equals("210 OK")) {
+                    message = "Enter user info in JSON format:";
+                } else if (response.equals("400 User Info Error") || response.equals("400 Wrong JSON format")) {
+                    message = "User info must be JSON format. Name contain only alphabet characters, age must be number!\nEnter something:";
+                } else if (response.equals("400 Wrong Input")) {
+                    message = "Wrong input! You need to follow the instructions!\nEnter something:";
+                } else if (response.equals("500 bye")) {
+                    System.out.println("Connection closed!");
+                } else {
+                    message = "Enter something:";
+                }
 
                 if (input.equals("QUIT"))
                     break;
